@@ -2,12 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import Receipt from "./Receipt";
 
 
 export default function POSPage() {
   const [cart, setCart] = useState<any[]>([]);
   const [paymentMethod, setPaymentMethod] = useState("Cash");
   const [menuItems, setMenuItems] = useState<any[]>([]);
+  const [showReceipt, setShowReceipt] = useState(false);
+const [lastReceiptNo, setLastReceiptNo] = useState("");
+const [lastSaleItems, setLastSaleItems] = useState<any[]>([]);
+const [lastTotal, setLastTotal] = useState(0);
 
  useEffect(() => {
   loadMenu();
@@ -94,6 +99,15 @@ async function loadMenu() {
 
   async function completeSale() {
 
+const {
+  data: { user },
+} = await supabase.auth.getUser();
+
+if (!user) {
+  alert("User not logged in");
+  return;
+}
+
   if (cart.length === 0) {
     alert("Cart Empty");
     return;
@@ -109,10 +123,11 @@ async function loadMenu() {
       await supabase
         .from("sales")
         .insert({
-          receipt_number: receiptNo,
-          payment_method: paymentMethod,
-          total: total,
-        })
+  cashier_id: user.id,
+  receipt_number: receiptNo,
+  payment_method: paymentMethod,
+  total: total,
+})
         .select()
         .single();
 
@@ -143,11 +158,13 @@ async function loadMenu() {
       return;
     }
 
-    alert(
-      `Sale Saved Successfully\nReceipt: ${receiptNo}`
-    );
+   setLastReceiptNo(receiptNo);
+setLastSaleItems(cart);
+setLastTotal(total);
 
-    setCart([]);
+setShowReceipt(true);
+
+setCart([]);
 
   } catch (err) {
     console.error(err);
@@ -288,7 +305,36 @@ async function loadMenu() {
         </button>
 
       </div>
+{showReceipt && (
+  <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
 
+    <div className="bg-white p-6 rounded-lg">
+
+      <Receipt
+        receiptNo={lastReceiptNo}
+        cart={lastSaleItems}
+        total={lastTotal}
+        paymentMethod={paymentMethod}
+      />
+
+      <button
+        onClick={() => window.print()}
+        className="mt-4 w-full bg-blue-600 text-white py-2 rounded"
+      >
+        Print Receipt
+      </button>
+
+      <button
+        onClick={() => setShowReceipt(false)}
+        className="mt-2 w-full bg-gray-300 py-2 rounded"
+      >
+        Close
+      </button>
+
+    </div>
+
+  </div>
+)}
     </div>
   );
 }

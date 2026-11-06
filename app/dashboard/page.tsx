@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { getCurrentRole } from "@/lib/auth";
+import HeroCarousel from "@/components/HeroCarousel";
 
 export default function DashboardPage() {
   const [role, setRole] = useState("");

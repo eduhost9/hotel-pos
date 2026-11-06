@@ -19,6 +19,8 @@ export default function POSPage() {
   const [isOnline, setIsOnline] = useState(true);
   const [cashierId, setCashierId] =
   useState<string>("");
+ const [search, setSearch] =
+  useState(""); 
 const [lastReceiptNo, setLastReceiptNo] = useState("");
 const [lastSaleItems, setLastSaleItems] = useState<any[]>([]);
 const [lastTotal, setLastTotal] = useState(0);
@@ -157,6 +159,15 @@ async function loadUser() {
       cart.filter((item) => item.id !== id)
     );
   }
+
+const filteredMenu =
+  menuItems.filter((item) =>
+    item.name
+      .toLowerCase()
+      .includes(
+        search.toLowerCase()
+      )
+  );
 
   const total = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
@@ -322,31 +333,69 @@ if (kitchenError) {
 
       <div className="col-span-3">
 
-        <h1 className="text-3xl font-bold mb-4">
-          Hotel POS
-        </h1>
+  <h1 className="text-3xl font-bold mb-4">
+    Hotel POS
+  </h1>
 
-        <div className="grid grid-cols-3 gap-4">
+  <input
+    type="text"
+    placeholder="🔍 Search food or drink..."
+    value={search}
+    onChange={(e) =>
+      setSearch(e.target.value)
+    }
+    className="w-full border p-3 rounded-lg mb-4"
+  />
 
-          {menuItems.map((item) => (
+  <div className="bg-white border rounded-xl overflow-hidden">
+
+    <div className="max-h-[700px] overflow-y-auto">
+
+      {filteredMenu.map((item) => (
+
+        <div
+          key={item.id}
+          className="flex justify-between items-center border-b px-4 py-4 hover:bg-slate-50"
+        >
+
+          <div>
+
+            <div className="font-bold text-lg">
+              {item.name}
+            </div>
+
+            <div className="text-sm text-gray-500">
+              {item.category}
+            </div>
+
+          </div>
+
+          <div className="flex items-center gap-4">
+
+            <div className="font-bold text-green-700">
+              KES {item.selling_price}
+            </div>
+
             <button
-              key={item.id}
-              onClick={() => addToCart(item)}
-              className="bg-blue-600 text-white p-6 rounded-xl hover:bg-blue-700"
+              onClick={() =>
+                addToCart(item)
+              }
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
             >
-              <div className="text-xl font-bold">
-                {item.name}
-              </div>
-
-              <div>
-                KES {item.selling_price}
-              </div>
+              Add
             </button>
-          ))}
+
+          </div>
 
         </div>
 
-      </div>
+      ))}
+
+    </div>
+
+  </div>
+
+</div>
 
       {/* CART */}
 

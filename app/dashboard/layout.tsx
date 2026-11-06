@@ -49,162 +49,145 @@ if (loading) {
 }
 
   return (
-    <div className="min-h-screen bg-slate-100">
-      <div className="flex">
+  <div className="min-h-screen bg-slate-100">
 
-        <aside className="w-64 bg-white border-r p-4 min-h-screen">
+    <div className="flex">
 
-          <h2 className="font-bold text-2xl mb-6">
-          CHOMA ZONE HOTEL POS
-          </h2>
+      {/* SIDEBAR */}
 
-          <div className="space-y-2">
+      <aside className="w-72 min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-white shadow-2xl">
 
-  {role === "admin" && (
-    <>
-      <a
-        href="/dashboard"
-        className="block p-2 rounded hover:bg-slate-100"
-      >
-        Dashboard
-      </a>
+        <div className="p-6 border-b border-slate-700">
 
-      <a
-        href="/dashboard/pos"
-        className="block p-2 rounded hover:bg-slate-100"
-      >
-        POS
-      </a>
+          <h1 className="text-3xl font-bold">
+            🏨 CHOMA ZONE
+          </h1>
 
-      <a
-        href="/dashboard/menu"
-        className="block p-2 rounded hover:bg-slate-100"
-      >
-        Menu
-      </a>
+          <p className="text-slate-300 mt-2">
+            Hotel Management System
+          </p>
 
-      <a
-        href="/dashboard/reports"
-        className="block p-2 rounded hover:bg-slate-100"
-      >
-        Reports
-      </a>
+        </div>
 
-      <a
-        href="/dashboard/stock"
-        className="block p-2 rounded hover:bg-slate-100"
-      >
-        Stock
-      </a>
+        <div className="p-4">
 
-      <a
-        href="/dashboard/payroll"
-        className="block p-2 rounded hover:bg-slate-100"
-      >
-        Payroll
-      </a>
+          <div className="mb-4 px-3 py-2 bg-slate-700 rounded-lg">
 
-      <a
-        href="/dashboard/test-role"
-        className="block p-2 rounded hover:bg-slate-100"
-      >
-        Role Test
-      </a>
+            <p className="text-sm text-slate-300">
+              Logged In As
+            </p>
 
-      <a
-  href="/dashboard/sales"
-  className="block p-2 rounded hover:bg-slate-100"
->
-  Sales
-</a>
+            <p className="font-semibold capitalize">
+              {role}
+            </p>
 
-<a
-  href="/dashboard/expenses"
-  className="block p-2 rounded hover:bg-slate-100"
->
-  Expenses
-</a>
+          </div>
 
-<a
-  href="/dashboard/profit"
-  className="block p-2 rounded hover:bg-slate-100"
->
-  Profit
-</a>
+          <nav className="space-y-1">
 
-<a
-  href="/dashboard/analytics"
-  className="block p-2 rounded hover:bg-slate-100"
->
-  Analytics
-</a>
+            {role === "admin" && (
+              <>
+                <a href="/dashboard" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                  📊 Dashboard
+                </a>
 
-<a
-  href="/dashboard/offline-queue"
-  className="block p-2 rounded hover:bg-slate-100"
->
-  Offline Queue
-</a>
+                <a href="/dashboard/pos" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                  💰 POS
+                </a>
 
-<a
-  href="/dashboard/reconciliation"
-  className="block p-2 rounded hover:bg-slate-100"
->
-  Reconciliation
-</a>
+                <a href="/dashboard/menu" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                  🍽️ Menu
+                </a>
 
-<a
-  href="/dashboard/kitchen"
-  className="block p-2 rounded hover:bg-slate-100"
->
-  Kitchen
-</a>
+                <a href="/dashboard/categories" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                  🏷️ Categories
+                </a>
 
-<a
-  href="/dashboard/categories"
-  className="block p-2 rounded hover:bg-slate-100"
->
-  Categories
-</a>
+                <a href="/dashboard/kitchen" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                  👨‍🍳 Kitchen
+                </a>
 
-    </>
-  )}
+                <a href="/dashboard/stock" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                  📦 Stock
+                </a>
 
-  {role === "cashier" && (
-    <>
-      <a
-        href="/dashboard/pos"
-        className="block p-2 rounded hover:bg-slate-100"
-      >
-        POS
-      </a>
+                <a href="/dashboard/sales" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                  🧾 Sales
+                </a>
 
-      <a
-        href="/dashboard/my-sales"
-        className="block p-2 rounded hover:bg-slate-100"
-      >
-        My Sales
-      </a>
+                <a href="/dashboard/expenses" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                  💸 Expenses
+                </a>
 
-    </>
-  )}
+                <a href="/dashboard/profit" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                  📈 Profit
+                </a>
 
-</div>
+                <a href="/dashboard/reports" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                  📋 Reports
+                </a>
+
+                <a href="/dashboard/analytics" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                  📊 Analytics
+                </a>
+
+                <a href="/dashboard/payroll" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                  💵 Payroll
+                </a>
+
+                <a href="/dashboard/reconciliation" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                  🏦 Reconciliation
+                </a>
+
+                <a href="/dashboard/offline-queue" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                  ☁️ Offline Queue
+                </a>
+              </>
+            )}
+
+            {role === "cashier" && (
+              <>
+                <a href="/dashboard/pos" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                  💰 POS
+                </a>
+
+                <a href="/dashboard/my-sales" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                  🧾 My Sales
+                </a>
+              </>
+            )}
+
+          </nav>
+
+        </div>
+
+        <div className="mt-auto p-4">
 
           <button
             onClick={logout}
-            className="mt-8 w-full bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+            className="w-full py-3 bg-red-500 hover:bg-red-600 rounded-lg font-semibold transition-all"
           >
-            Logout
+            🚪 Logout
           </button>
 
-        </aside>
+        </div>
 
-        <main className="flex-1 p-6">
+      </aside>
+
+      {/* MAIN CONTENT */}
+
+      <main className="flex-1 bg-slate-100 p-8">
+
+        <div className="bg-white rounded-2xl shadow-lg p-6 min-h-[calc(100vh-4rem)]">
+
           {children}
-        </main>
 
-      </div>
+        </div>
+
+      </main>
+
     </div>
-  );
+
+  </div>
+);
 }

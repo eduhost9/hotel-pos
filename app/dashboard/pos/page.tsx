@@ -3,6 +3,12 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import Receipt from "./Receipt";
+import { db }
+from "@/lib/offline-db";
+import {
+  syncOfflineSales
+}
+from "@/lib/syncOfflineSales";
 
 
 export default function POSPage() {
@@ -10,12 +16,61 @@ export default function POSPage() {
   const [paymentMethod, setPaymentMethod] = useState("Cash");
   const [menuItems, setMenuItems] = useState<any[]>([]);
   const [showReceipt, setShowReceipt] = useState(false);
+  const [isOnline, setIsOnline] = useState(true);
+  const [cashierId, setCashierId] =
+  useState<string>("");
 const [lastReceiptNo, setLastReceiptNo] = useState("");
 const [lastSaleItems, setLastSaleItems] = useState<any[]>([]);
 const [lastTotal, setLastTotal] = useState(0);
 
+const onlineHandler =
+  async () => {
+
+    setIsOnline(true);
+
+    await syncOfflineSales();
+
+  };
+
+  useEffect(() => {
+    setIsOnline(navigator.onLine);
+
+    if (navigator.onLine) {
+      void syncOfflineSales();
+    }
+
+  const offlineHandler =
+    () => setIsOnline(false);
+
+  window.addEventListener(
+    "online",
+    onlineHandler
+  );
+
+  window.addEventListener(
+    "offline",
+    offlineHandler
+  );
+
+  return () => {
+
+    window.removeEventListener(
+      "online",
+      onlineHandler
+    );
+
+    window.removeEventListener(
+      "offline",
+      offlineHandler
+    );
+
+  };
+
+}, []);
+
  useEffect(() => {
   loadMenu();
+  loadUser();
 }, []);
 
 async function loadMenu() {
@@ -31,6 +86,16 @@ async function loadMenu() {
   }
 
   setMenuItems(data || []);
+}
+
+async function loadUser() {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    setCashierId(user.id);
+  }
 }
 
   const addToCart = (item: any) => {
@@ -93,96 +158,169 @@ async function loadMenu() {
     );
   }
 
-  function generateReceiptNo() {
-    return "RCP-" + Date.now();
-  }
-
-  async function completeSale() {
-
-const {
-  data: { user },
-} = await supabase.auth.getUser();
-
-if (!user) {
-  alert("User not logged in");
-  return;
-}
-
-  if (cart.length === 0) {
-    alert("Cart Empty");
-    return;
-  }
-
-  try {
-
-    const receiptNo = generateReceiptNo();
-
-    // Save Sale Header
-
-    const { data: sale, error: saleError } =
-      await supabase
-        .from("sales")
-        .insert({
-  cashier_id: user.id,
-  receipt_number: receiptNo,
-  payment_method: paymentMethod,
-  total: total,
-})
-        .select()
-        .single();
-
-    if (saleError) {
-      console.error(saleError);
-      alert("Failed to save sale");
-      return;
-    }
-
-    // Save Sale Items
-
-    const saleItems = cart.map((item) => ({
-      sale_id: sale.id,
-      menu_item_id: item.id,
-      quantity: item.quantity,
-      unit_price: item.price,
-      subtotal: item.quantity * item.price,
-    }));
-
-    const { error: itemError } =
-      await supabase
-        .from("sale_items")
-        .insert(saleItems);
-
-    if (itemError) {
-      console.error(itemError);
-      alert("Failed to save items");
-      return;
-    }
-
-   setLastReceiptNo(receiptNo);
-setLastSaleItems(cart);
-setLastTotal(total);
-
-setShowReceipt(true);
-
-setCart([]);
-
-  } catch (err) {
-    console.error(err);
-    alert("Unexpected Error");
-  }
-}
-
   const total = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
 
+  function generateReceiptNo() {
+    return "RCP-" + Date.now();
+  }
+
+  async function completeSale() {
+    if (cart.length === 0) {
+      alert("Cart Empty");
+      return;
+    }
+
+    const receiptNo = generateReceiptNo();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    
+    if (!isOnline) {
+
+  await db.offlineSales.add({
+    cashier_id: cashierId,
+
+    receipt_number:
+      receiptNo,
+
+    payment_method:
+      paymentMethod,
+
+    total,
+
+    items: cart,
+
+    synced: false,
+
+    created_at:
+      new Date()
+        .toISOString(),
+  });
+
+  alert(
+    "Offline Sale Saved"
+  );
+
+  setCart([]);
+
+  return;
+}
+
+    try {
+      if (!user) {
+        alert("User not logged in");
+        return;
+      }
+
+      const { data: sale, error: saleError } = await supabase
+        .from("sales")
+        .insert({
+          cashier_id: user.id,
+          receipt_number: receiptNo,
+          payment_method: paymentMethod,
+          total,
+        })
+        .select()
+        .single();
+
+      if (saleError) {
+        console.error(saleError);
+        alert("Failed to save sale");
+        return;
+      }
+
+      const saleItems = cart.map((item) => ({
+        sale_id: sale.id,
+        menu_item_id: item.id,
+        quantity: item.quantity,
+        unit_price: item.price,
+        subtotal: item.quantity * item.price,
+      }));
+
+      const { error: itemError } = await supabase
+        .from("sale_items")
+        .insert(saleItems);
+
+      if (itemError) {
+        console.error(itemError);
+        alert("Failed to save items");
+        return;
+      }
+// CREATE KITCHEN ORDER
+
+const {
+  data: kitchenOrder,
+  error: kitchenError,
+} = await supabase
+  .from("kitchen_orders")
+  .insert({
+    receipt_number: receiptNo,
+    cashier_id: user.id,
+    total: total,
+    status: "Pending",
+  })
+  .select()
+  .single();
+
+if (kitchenError) {
+  console.error(kitchenError);
+} else {
+
+  const kitchenItems = cart.map(
+    (item) => ({
+      kitchen_order_id:
+        kitchenOrder.id,
+
+      menu_item_id:
+        item.id,
+
+      item_name:
+        item.name,
+
+      quantity:
+        item.quantity,
+
+      status: "Pending",
+    })
+  );
+
+  const {
+    error: kitchenItemsError,
+  } = await supabase
+    .from("kitchen_order_items")
+    .insert(kitchenItems);
+
+  if (kitchenItemsError) {
+    console.error(
+      kitchenItemsError
+    );
+  }
+}
+      setLastReceiptNo(receiptNo);
+      setLastSaleItems(cart);
+      setLastTotal(total);
+      setShowReceipt(true);
+      setCart([]);
+    } catch (err) {
+      console.error(err);
+      alert("Unexpected Error");
+    }
+  }
+
   return (
-    <div className="grid grid-cols-3 gap-4 h-screen p-4">
+    
+    <div className="grid grid-cols-4 gap-4 h-screen p-4">
+
+     
 
       {/* PRODUCTS */}
 
-      <div className="col-span-2">
+      <div className="col-span-3">
 
         <h1 className="text-3xl font-bold mb-4">
           Hotel POS
@@ -217,6 +355,18 @@ setCart([]);
         <h2 className="text-2xl font-bold mb-4">
           Cart
         </h2>
+
+        <div
+  className={`mb-4 p-2 rounded text-center text-white font-bold ${
+    isOnline
+      ? "bg-green-600"
+      : "bg-red-600"
+  }`}
+>
+  {isOnline
+    ? "🟢 ONLINE"
+    : "🔴 OFFLINE"}
+</div>
 
         {cart.map((item) => (
 

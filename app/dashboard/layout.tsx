@@ -118,6 +118,55 @@ if (loading) {
   Sales
 </a>
 
+<a
+  href="/dashboard/expenses"
+  className="block p-2 rounded hover:bg-slate-100"
+>
+  Expenses
+</a>
+
+<a
+  href="/dashboard/profit"
+  className="block p-2 rounded hover:bg-slate-100"
+>
+  Profit
+</a>
+
+<a
+  href="/dashboard/analytics"
+  className="block p-2 rounded hover:bg-slate-100"
+>
+  Analytics
+</a>
+
+<a
+  href="/dashboard/offline-queue"
+  className="block p-2 rounded hover:bg-slate-100"
+>
+  Offline Queue
+</a>
+
+<a
+  href="/dashboard/reconciliation"
+  className="block p-2 rounded hover:bg-slate-100"
+>
+  Reconciliation
+</a>
+
+<a
+  href="/dashboard/kitchen"
+  className="block p-2 rounded hover:bg-slate-100"
+>
+  Kitchen
+</a>
+
+<a
+  href="/dashboard/categories"
+  className="block p-2 rounded hover:bg-slate-100"
+>
+  Categories
+</a>
+
     </>
   )}
 

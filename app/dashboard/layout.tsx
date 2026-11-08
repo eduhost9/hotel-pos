@@ -13,6 +13,9 @@ export default function DashboardLayout({
   const router = useRouter();
   const [loading, setLoading] = useState(true);
 const [role, setRole] = useState("");
+const [sidebarOpen, setSidebarOpen] =
+  useState(false);
+
 
   useEffect(() => {
   checkUser();
@@ -48,14 +51,65 @@ if (loading) {
   );
 }
 
-  return (
+ return (
   <div className="min-h-screen bg-slate-100">
 
+    {/* MOBILE MENU */}
+
+    <div className="md:hidden bg-white border-b p-4 sticky top-0 z-50">
+
+      <button
+        onClick={() =>
+          setSidebarOpen(!sidebarOpen)
+        }
+        className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+      >
+        ☰ Menu
+      </button>
+
+    </div>
+
     <div className="flex">
+      {sidebarOpen && (
+  <div
+    className="fixed inset-0 bg-black/40 z-40 md:hidden"
+    onClick={() =>
+      setSidebarOpen(false)
+    }
+  />
+)}
 
       {/* SIDEBAR */}
 
-      <aside className="w-72 min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-white shadow-2xl">
+      <aside
+  className={`
+    w-72
+    min-h-screen
+    bg-gradient-to-b
+    from-slate-900
+    to-slate-800
+    text-white
+    shadow-2xl
+
+    fixed
+    md:static
+
+    top-0
+
+    z-50
+
+    transition-all
+    duration-300
+
+    ${
+      sidebarOpen
+        ? "left-0"
+        : "-left-72"
+    }
+
+    md:left-0
+  `}
+>
 
         <div className="p-6 border-b border-slate-700">
 
@@ -87,59 +141,97 @@ if (loading) {
 
             {role === "admin" && (
               <>
-                <a href="/dashboard" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+              <a
+  href="/dashboard/users"
+  onClick={() =>
+    setSidebarOpen(false)
+  }
+  className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition"
+>
+  👥 Users
+</a>
+
+                <a href="/dashboard" 
+                onClick={() => setSidebarOpen(false)}
+                className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
                   📊 Dashboard
                 </a>
 
-                <a href="/dashboard/pos" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                <a href="/dashboard/pos"
+                onClick={() => setSidebarOpen(false)}
+                className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
                   💰 POS
                 </a>
 
-                <a href="/dashboard/menu" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                <a href="/dashboard/menu" 
+                onClick={() => setSidebarOpen(false)}
+                className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
                   🍽️ Menu
                 </a>
 
-                <a href="/dashboard/categories" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                <a href="/dashboard/categories"
+                onClick={() => setSidebarOpen(false)}
+                className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
                   🏷️ Categories
                 </a>
 
-                <a href="/dashboard/kitchen" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                <a href="/dashboard/kitchen"
+                onClick={() => setSidebarOpen(false)}
+                className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
                   👨‍🍳 Kitchen
                 </a>
 
-                <a href="/dashboard/stock" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                <a href="/dashboard/stock" 
+                onClick={() => setSidebarOpen(false)}
+                className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
                   📦 Stock
                 </a>
 
-                <a href="/dashboard/sales" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                <a href="/dashboard/sales" 
+                onClick={() => setSidebarOpen(false)}
+                className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
                   🧾 Sales
                 </a>
 
-                <a href="/dashboard/expenses" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                <a href="/dashboard/expenses" 
+                onClick={() => setSidebarOpen(false)}
+                className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
                   💸 Expenses
                 </a>
 
-                <a href="/dashboard/profit" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                <a href="/dashboard/profit" 
+                onClick={() => setSidebarOpen(false)}
+                className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
                   📈 Profit
                 </a>
 
-                <a href="/dashboard/reports" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                <a href="/dashboard/reports" 
+                onClick={() => setSidebarOpen(false)}
+                className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
                   📋 Reports
                 </a>
 
-                <a href="/dashboard/analytics" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                <a href="/dashboard/analytics" 
+                onClick={() => setSidebarOpen(false)}
+                className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
                   📊 Analytics
                 </a>
 
-                <a href="/dashboard/payroll" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                <a href="/dashboard/payroll" 
+                onClick={() => setSidebarOpen(false)}
+                className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
                   💵 Payroll
                 </a>
 
-                <a href="/dashboard/reconciliation" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                <a href="/dashboard/reconciliation" 
+                onClick={() => setSidebarOpen(false)}
+                className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
                   🏦 Reconciliation
                 </a>
 
-                <a href="/dashboard/offline-queue" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                <a href="/dashboard/offline-queue" 
+                onClick={() => setSidebarOpen(false)}
+                className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
                   ☁️ Offline Queue
                 </a>
               </>
@@ -147,11 +239,15 @@ if (loading) {
 
             {role === "cashier" && (
               <>
-                <a href="/dashboard/pos" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                <a href="/dashboard/pos" 
+                onClick={() => setSidebarOpen(false)}
+                className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
                   💰 POS
                 </a>
 
-                <a href="/dashboard/my-sales" className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                <a href="/dashboard/my-sales" 
+                onClick={() => setSidebarOpen(false)}
+                className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
                   🧾 My Sales
                 </a>
               </>
@@ -176,9 +272,9 @@ if (loading) {
 
       {/* MAIN CONTENT */}
 
-      <main className="flex-1 bg-slate-100 p-8">
+      <main className="flex-1 bg-slate-100 p-4 md:p-8">
 
-        <div className="bg-white rounded-2xl shadow-lg p-6 min-h-[calc(100vh-4rem)]">
+        <div className="bg-white rounded-2xl shadow-lg p-3 md:p-6 min-h-[calc(100vh-4rem)] overflow-x-auto">
 
           {children}
 

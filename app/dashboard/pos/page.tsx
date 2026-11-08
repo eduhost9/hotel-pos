@@ -325,15 +325,15 @@ if (kitchenError) {
 
   return (
     
-    <div className="grid grid-cols-4 gap-4 h-screen p-4">
+    <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 p-2 md:p-4">
 
      
 
       {/* PRODUCTS */}
 
-      <div className="col-span-3">
+      <div className="xl:col-span-3">
 
-  <h1 className="text-3xl font-bold mb-4">
+  <h1 className="text-2xl md:text-3xl font-bold mb-4">
     Hotel POS
   </h1>
 
@@ -349,13 +349,24 @@ if (kitchenError) {
 
   <div className="bg-white border rounded-xl overflow-hidden">
 
-    <div className="max-h-[700px] overflow-y-auto">
+    <div className="max-h-[60vh] md:max-h-[700px] overflow-y-auto">
 
       {filteredMenu.map((item) => (
 
         <div
           key={item.id}
-          className="flex justify-between items-center border-b px-4 py-4 hover:bg-slate-50"
+          className="
+flex
+flex-col
+sm:flex-row
+sm:justify-between
+sm:items-center
+border-b
+px-4
+py-4
+hover:bg-slate-50
+gap-3
+"
         >
 
           <div>
@@ -370,7 +381,7 @@ if (kitchenError) {
 
           </div>
 
-          <div className="flex items-center gap-4">
+         <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto">
 
             <div className="font-bold text-green-700">
               KES {item.selling_price}
@@ -399,7 +410,7 @@ if (kitchenError) {
 
       {/* CART */}
 
-      <div className="bg-white border rounded-xl p-4">
+      <div className="bg-white border rounded-xl p-4 sticky top-4">
 
         <h2 className="text-2xl font-bold mb-4">
           Cart
@@ -441,7 +452,7 @@ if (kitchenError) {
 
             </div>
 
-            <div className="flex gap-2 mt-2 items-center">
+            <div className="flex flex-wrap gap-2 mt-2 items-center">
 
               <button
                 onClick={() => decreaseQty(item.id)}
@@ -485,7 +496,7 @@ if (kitchenError) {
           onChange={(e) =>
             setPaymentMethod(e.target.value)
           }
-          className="border p-2 w-full mb-4 rounded"
+          className="border p-3 w-full mb-4 rounded"
         >
           <option>Cash</option>
           <option>MPESA</option>
@@ -498,7 +509,18 @@ if (kitchenError) {
 
         <button
           onClick={completeSale}
-          className="w-full mt-4 bg-green-600 text-white py-4 rounded-lg text-lg font-bold"
+          className="
+w-full
+mt-4
+bg-green-600
+text-white
+py-4
+rounded-lg
+text-lg
+font-bold
+sticky
+bottom-0
+"
         >
           COMPLETE SALE
         </button>
@@ -507,7 +529,7 @@ if (kitchenError) {
 {showReceipt && (
   <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
 
-    <div className="bg-white p-6 rounded-lg">
+    <div className="bg-white p-6 rounded-lg w-[95%] max-w-md">
 
       <Receipt
         receiptNo={lastReceiptNo}

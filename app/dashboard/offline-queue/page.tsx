@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { db } from "@/lib/offline-db";
 import { syncOfflineSales } from "@/lib/syncOfflineSales";
+import PermissionGuard from "@/components/PermissionGuard";
 
 export default function OfflineQueuePage() {
   const [sales, setSales] = useState<any[]>([]);
@@ -52,6 +53,7 @@ export default function OfflineQueuePage() {
   );
 
   return (
+    <PermissionGuard permission="offline-queue">
     <div className="p-6">
 
       <h1 className="text-3xl font-bold mb-6">
@@ -213,5 +215,6 @@ export default function OfflineQueuePage() {
       )}
 
     </div>
+    </PermissionGuard>
   );
 }

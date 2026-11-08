@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { requireAdmin } from "@/lib/adminGuard";
+import PermissionGuard from "@/components/PermissionGuard";
 
 export default function ReportsPage() {
   const router = useRouter();
@@ -97,6 +98,7 @@ export default function ReportsPage() {
   ];
 
   return (
+    <PermissionGuard permission="reports">
     <div className="p-6">
 
       <h1 className="text-3xl font-bold mb-6">
@@ -133,5 +135,6 @@ export default function ReportsPage() {
       </div>
 
     </div>
+    </PermissionGuard>
   );
 }

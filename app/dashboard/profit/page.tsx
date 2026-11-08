@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import PermissionGuard from "@/components/PermissionGuard";
 
 export default function ProfitPage() {
   const [revenue, setRevenue] =
@@ -94,6 +95,7 @@ if (period === "today") {
   }
 
   return (
+    <PermissionGuard permission="profit">
     <div>
 
       <h1 className="text-3xl font-bold mb-6">
@@ -223,5 +225,6 @@ if (period === "today") {
 </div>
 
     </div>
+    </PermissionGuard>
   );
 }

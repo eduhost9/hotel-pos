@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import PermissionGuard from "@/components/PermissionGuard";
 
 export default function ExpensesPage() {
   const [description, setDescription] =
@@ -112,6 +113,7 @@ export default function ExpensesPage() {
     );
 
   return (
+  <PermissionGuard permission="expenses">
     <div>
 
       <h1 className="text-3xl font-bold mb-6">
@@ -245,5 +247,6 @@ export default function ExpensesPage() {
       </table>
 
     </div>
+    </PermissionGuard>
   );
 }

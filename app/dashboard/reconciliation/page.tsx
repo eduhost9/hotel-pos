@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import PermissionGuard from "@/components/PermissionGuard";
 
 export default function ReconciliationPage() {
   const [sales, setSales] = useState(0);
@@ -49,6 +50,7 @@ export default function ReconciliationPage() {
     cashCounted - expectedCash;
 
   return (
+    <PermissionGuard permission="reconciliation">
     <div className="p-6">
 
       <h1 className="text-3xl font-bold mb-6">
@@ -121,5 +123,6 @@ export default function ReconciliationPage() {
       </div>
 
     </div>
+    </PermissionGuard>
   );
 }

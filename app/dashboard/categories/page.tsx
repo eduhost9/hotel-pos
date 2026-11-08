@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import PermissionGuard from "@/components/PermissionGuard";
 
 export default function CategoriesPage() {
   const [categories, setCategories] =
@@ -73,6 +74,7 @@ export default function CategoriesPage() {
   }
 
   return (
+    <PermissionGuard permission="categories">
     <div className="p-6">
 
       <h1 className="text-3xl font-bold mb-6">
@@ -168,5 +170,6 @@ export default function CategoriesPage() {
       </table>
 
     </div>
+    </PermissionGuard>
   );
 }

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { requireAdmin } from "@/lib/adminGuard";
+import PermissionGuard from "@/components/PermissionGuard";
 
 export default function MenuPage() {
   const router = useRouter();
@@ -179,6 +180,7 @@ setCostPrice(
   }
 
   return (
+    <PermissionGuard permission="menu">
     <div className="p-6">
 
       <h1 className="text-3xl font-bold mb-6">
@@ -377,5 +379,6 @@ setCostPrice(
       </div>
 
     </div>
+    </PermissionGuard>
   );
 }

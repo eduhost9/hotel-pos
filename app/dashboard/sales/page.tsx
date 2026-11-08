@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import Receipt from "../pos/Receipt";
+import PermissionGuard from "@/components/PermissionGuard";
 
 export default function SalesPage() {
   const [sales, setSales] = useState<any[]>([]);
@@ -78,10 +79,11 @@ const [receiptData, setReceiptData] =
 }
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-6">
-        Sales History
-      </h1>
+    <PermissionGuard permission="sales">
+      <div>
+        <h1 className="text-3xl font-bold mb-6">
+          Sales History
+        </h1>
 
       <div className="bg-white rounded-xl border overflow-hidden">
 
@@ -271,5 +273,6 @@ const [receiptData, setReceiptData] =
 
       </div>
     </div>
+    </PermissionGuard>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import PermissionGuard from "@/components/PermissionGuard";
 
 export default function PayrollPage() {
   const [employees, setEmployees] =
@@ -320,6 +321,7 @@ async function deletePayroll(
 }
 
   return (
+  <PermissionGuard permission="payroll">
     <div>
 
       <h1 className="text-3xl font-bold mb-6">
@@ -605,5 +607,6 @@ async function deletePayroll(
 </div>
 
     </div>
+    </PermissionGuard>
   );
 }

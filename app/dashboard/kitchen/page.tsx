@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import PermissionGuard from "@/components/PermissionGuard";
 
 export default function KitchenPage() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -72,6 +73,7 @@ export default function KitchenPage() {
   );
 
   return (
+    <PermissionGuard permission="kitchen">
     <div className="p-6">
 
       <h1 className="text-3xl font-bold mb-6">
@@ -251,5 +253,6 @@ export default function KitchenPage() {
       )}
 
     </div>
+    </PermissionGuard>
   );
 }

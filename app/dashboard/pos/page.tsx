@@ -9,6 +9,7 @@ import {
   syncOfflineSales
 }
 from "@/lib/syncOfflineSales";
+import PermissionGuard from "@/components/PermissionGuard";
 
 
 export default function POSPage() {
@@ -324,6 +325,7 @@ if (kitchenError) {
   }
 
   return (
+    <PermissionGuard permission="pos">
     
     <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 p-2 md:p-4">
 
@@ -557,5 +559,6 @@ bottom-0
   </div>
 )}
     </div>
+    </PermissionGuard>
   );
 }

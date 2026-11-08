@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import PermissionGuard from "@/components/PermissionGuard";
 import RevenueChart from "@/components/analytics/RevenueChart";
 
 export default function AnalyticsPage() {
@@ -347,6 +348,7 @@ export default function AnalyticsPage() {
   }
 
   return (
+  <PermissionGuard permission="analytics">
     <div>
 
       <h1 className="text-3xl font-bold mb-6">
@@ -500,5 +502,6 @@ export default function AnalyticsPage() {
       </div>
 
     </div>
+    </PermissionGuard>
   );
 }

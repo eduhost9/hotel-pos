@@ -4,6 +4,10 @@ import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getCurrentRole } from "@/lib/auth";
+import {
+  getUserPermissions,
+} from "@/lib/permissions";
+import { db } from "@/lib/offline-db";
 
 export default function DashboardLayout({
   children,
@@ -13,8 +17,12 @@ export default function DashboardLayout({
   const router = useRouter();
   const [loading, setLoading] = useState(true);
 const [role, setRole] = useState("");
+const [permissions,
+setPermissions] =
+  useState<string[]>([]);
 const [sidebarOpen, setSidebarOpen] =
   useState(false);
+  
 
 
   useEffect(() => {
@@ -22,26 +30,80 @@ const [sidebarOpen, setSidebarOpen] =
 }, []);
 
 async function checkUser() {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  if (!navigator.onLine) {
 
-  if (!user) {
+  const savedUser =
+    localStorage.getItem(
+      "offlineUser"
+    );
+
+  if (!savedUser) {
+
     router.push("/login");
+
     return;
   }
 
-  const userRole = await getCurrentRole();
+  const offlineUser =
+    JSON.parse(savedUser);
 
-  setRole(userRole || "");
+  setRole(
+    offlineUser.role || ""
+  );
+
+  setPermissions(
+    offlineUser.permissions || []
+  );
 
   setLoading(false);
+
+  return;
+}
+
+const {
+  data: { user },
+} = await supabase.auth.getUser();
+
+if (!user) {
+
+  router.push("/login");
+
+  return;
+}
+
+  const userRole =
+  await getCurrentRole();
+
+setRole(userRole || "");
+
+const perms =
+  await getUserPermissions();
+
+setPermissions(perms);
+
+setLoading(false);
+}
+
+function can(
+  permission: string
+) {
+
+  return permissions.includes(
+    permission
+  );
+
 }
 
   async function logout() {
-    await supabase.auth.signOut();
-    router.push("/login");
-  }
+
+  localStorage.removeItem(
+    "offlineUser"
+  );
+
+  await supabase.auth.signOut();
+
+  router.push("/login");
+}
 
 if (loading) {
   return (
@@ -139,17 +201,21 @@ if (loading) {
 
           <nav className="space-y-1">
 
-            {role === "admin" && (
+            
               <>
-              <a
-  href="/dashboard/users"
-  onClick={() =>
-    setSidebarOpen(false)
-  }
-  className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition"
->
-  👥 Users
-</a>
+             {can("users") && (
+
+  <a
+    href="/dashboard/users"
+    onClick={() =>
+      setSidebarOpen(false)
+    }
+    className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition"
+  >
+    👥 Users
+  </a>
+
+)}
 
                 <a href="/dashboard" 
                 onClick={() => setSidebarOpen(false)}
@@ -157,17 +223,36 @@ if (loading) {
                   📊 Dashboard
                 </a>
 
-                <a href="/dashboard/pos"
-                onClick={() => setSidebarOpen(false)}
-                className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
-                  💰 POS
-                </a>
+                {can("pos") && (
 
-                <a href="/dashboard/menu" 
-                onClick={() => setSidebarOpen(false)}
-                className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
-                  🍽️ Menu
-                </a>
+<a
+  href="/dashboard/pos"
+  onClick={() =>
+    setSidebarOpen(false)
+  }
+  className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition"
+>
+  💰 POS
+</a>
+
+)}
+
+                {can("menu") && (
+
+<a
+  href="/dashboard/menu"
+  onClick={() =>
+    setSidebarOpen(false)
+  }
+  className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition"
+>
+  🍽️ Menu
+</a>
+
+)}
+
+                
+                {can("categories") && (
 
                 <a href="/dashboard/categories"
                 onClick={() => setSidebarOpen(false)}
@@ -175,83 +260,101 @@ if (loading) {
                   🏷️ Categories
                 </a>
 
+                )}
+
+                {can("kitchen") && (
+
                 <a href="/dashboard/kitchen"
                 onClick={() => setSidebarOpen(false)}
                 className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
                   👨‍🍳 Kitchen
                 </a>
+                )}
 
+{can("stock") && (
                 <a href="/dashboard/stock" 
                 onClick={() => setSidebarOpen(false)}
                 className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
                   📦 Stock
                 </a>
+)}
 
-                <a href="/dashboard/sales" 
-                onClick={() => setSidebarOpen(false)}
-                className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
-                  🧾 Sales
-                </a>
 
-                <a href="/dashboard/expenses" 
-                onClick={() => setSidebarOpen(false)}
-                className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
-                  💸 Expenses
-                </a>
+                {can("sales") && (
+                  <a href="/dashboard/sales" 
+                  onClick={() => setSidebarOpen(false)}
+                  className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                    🧾 Sales
+                  </a>
+                )}
 
-                <a href="/dashboard/profit" 
-                onClick={() => setSidebarOpen(false)}
-                className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                {can("expenses") && (
+                  <a href="/dashboard/expenses" 
+                  onClick={() => setSidebarOpen(false)}
+                  className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                    💸 Expenses
+                  </a>
+                )}
+
+                {can("profit") && (
+                  <a href="/dashboard/profit" 
+                  onClick={() => setSidebarOpen(false)}
+                  className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
                   📈 Profit
                 </a>
+ )}
+                {can("reports") && (
+                  <a href="/dashboard/reports" 
+                  onClick={() => setSidebarOpen(false)}
+                  className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                    📋 Reports
+                  </a>
+                )}
 
-                <a href="/dashboard/reports" 
-                onClick={() => setSidebarOpen(false)}
-                className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
-                  📋 Reports
-                </a>
+                {can("analytics") && (
+                  <a href="/dashboard/analytics" 
+                  onClick={() => setSidebarOpen(false)}
+                  className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                    📊 Analytics
+                  </a>
+                )}
 
-                <a href="/dashboard/analytics" 
-                onClick={() => setSidebarOpen(false)}
-                className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
-                  📊 Analytics
-                </a>
+                {can("payroll") && (
+                  <a href="/dashboard/payroll" 
+                  onClick={() => setSidebarOpen(false)}
+                  className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                    💵 Payroll
+                  </a>
+                )}
 
-                <a href="/dashboard/payroll" 
-                onClick={() => setSidebarOpen(false)}
-                className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
-                  💵 Payroll
-                </a>
-
-                <a href="/dashboard/reconciliation" 
-                onClick={() => setSidebarOpen(false)}
-                className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                {can("reconciliation") && (
+                  <a href="/dashboard/reconciliation" 
+                  onClick={() => setSidebarOpen(false)}
+                  className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
                   🏦 Reconciliation
                 </a>
-
-                <a href="/dashboard/offline-queue" 
-                onClick={() => setSidebarOpen(false)}
-                className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
-                  ☁️ Offline Queue
-                </a>
+ )}
+                {can("offline-queue") && (
+                  <a href="/dashboard/offline-queue" 
+                  onClick={() => setSidebarOpen(false)}
+                  className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
+                    ☁️ Offline Queue
+                  </a>
+                )}
               </>
-            )}
+            
 
-            {role === "cashier" && (
+            
               <>
-                <a href="/dashboard/pos" 
-                onClick={() => setSidebarOpen(false)}
-                className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
-                  💰 POS
-                </a>
-
+                    {can("my-sales") && (
                 <a href="/dashboard/my-sales" 
                 onClick={() => setSidebarOpen(false)}
                 className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition">
                   🧾 My Sales
                 </a>
+                 )}
               </>
-            )}
+            
 
           </nav>
 

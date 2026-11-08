@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import PermissionGuard from "@/components/PermissionGuard";
 
 export default function MySalesPage() {
   const [salesTotal, setSalesTotal] = useState(0);
@@ -44,7 +45,8 @@ export default function MySalesPage() {
   }
 
   return (
-    <div>
+    <PermissionGuard permission="my-sales">
+      <div>
 
       <h1 className="text-3xl font-bold mb-6">
         My Sales Today
@@ -79,5 +81,6 @@ export default function MySalesPage() {
       </div>
 
     </div>
+    </PermissionGuard>
   );
 }

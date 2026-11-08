@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import PermissionGuard from "@/components/PermissionGuard";
 
 export default function StockPage() {
   const [itemName, setItemName] =
@@ -164,7 +165,10 @@ async function deleteStock(id: string) {
   loadStock();
 }
 
-  return (
+
+
+ return (
+  <PermissionGuard permission="stock">
     <div>
 
       <h1 className="text-3xl font-bold mb-6">
@@ -351,5 +355,6 @@ async function deleteStock(id: string) {
       </div>
 
     </div>
+    </PermissionGuard>
   );
 }

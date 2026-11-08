@@ -127,7 +127,7 @@ export default function DashboardPage() {
         <div className="bg-white p-6 rounded-xl border">
 
           <h2 className="text-gray-500">
-            Average Sale
+            Average Sales
           </h2>
 
           <div className="text-4xl font-bold">

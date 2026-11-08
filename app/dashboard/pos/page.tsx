@@ -333,7 +333,7 @@ if (kitchenError) {
 
       {/* PRODUCTS */}
 
-      <div className="xl:col-span-3">
+      <div className="order-2 xl:order-1 xl:col-span-3">
 
   <h1 className="text-2xl md:text-3xl font-bold mb-4">
     Hotel POS
@@ -412,7 +412,7 @@ gap-3
 
       {/* CART */}
 
-      <div className="bg-white border rounded-xl p-4 sticky top-4">
+      <div className="order-1 xl:order-2 bg-white border rounded-xl p-4 sticky top-4">
 
         <h2 className="text-2xl font-bold mb-4">
           Cart

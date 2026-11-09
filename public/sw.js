@@ -1,4 +1,4 @@
-const CACHE_NAME = "choma-zone-v2";
+const CACHE_NAME = "choma-zone-v3";
 
 const urlsToCache = [
   "/",

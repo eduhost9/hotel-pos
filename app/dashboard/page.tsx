@@ -262,7 +262,7 @@ setTodayDate(
     <div className="bg-white rounded-2xl p-6 shadow-lg">
 
       <h2 className="text-2xl font-bold mb-3">
-        Hotel Operations Overview
+        Hotel Daily Operations Overview
       </h2>
 
       <p className="text-gray-600">

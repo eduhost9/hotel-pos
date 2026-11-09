@@ -31,12 +31,7 @@ const [todayDate, setTodayDate] =
 
     setRole(userRole || "");
 
-    if (userRole === "admin") {
-      loadAdminStats();
-    }
-  }
-
-const hour =
+    const hour =
   new Date().getHours();
 
 if (hour < 12) {
@@ -58,6 +53,11 @@ setTodayDate(
     }
   )
 );
+
+    if (userRole === "admin") {
+      loadAdminStats();
+    }
+  }
 
 
   async function loadAdminStats() {

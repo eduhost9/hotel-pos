@@ -15,6 +15,12 @@ export default function DashboardPage() {
   const [averageSale, setAverageSale] =
     useState(0);
 
+    const [greeting, setGreeting] =
+  useState("");
+
+const [todayDate, setTodayDate] =
+  useState("");
+
   useEffect(() => {
     initialize();
   }, []);
@@ -29,6 +35,30 @@ export default function DashboardPage() {
       loadAdminStats();
     }
   }
+
+const hour =
+  new Date().getHours();
+
+if (hour < 12) {
+  setGreeting("Good Morning");
+} else if (hour < 17) {
+  setGreeting("Good Afternoon");
+} else {
+  setGreeting("Good Evening");
+}
+
+setTodayDate(
+  new Date().toLocaleDateString(
+    "en-KE",
+    {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }
+  )
+);
+
 
   async function loadAdminStats() {
 
@@ -92,46 +122,42 @@ export default function DashboardPage() {
   }
 
   return (
-    <div>
+  <div className="space-y-6">
 
-      <h1 className="text-3xl font-bold mb-8">
-        Admin Dashboard
-      </h1>
+    {/* HERO */}
 
-      <div className="grid grid-cols-3 gap-6">
+    <div className="bg-gradient-to-r from-green-700 to-green-900 rounded-3xl p-6 text-white">
 
-        <div className="bg-white p-6 rounded-xl border">
+      <div className="flex flex-col md:flex-row md:justify-between">
 
-          <h2 className="text-gray-500">
-            Today's Revenue
-          </h2>
+        <div>
 
-          <div className="text-4xl font-bold">
-            KES {revenue}
-          </div>
+          <h1 className="text-3xl md:text-5xl font-bold">
+            🏨 CHOMA ZONE HOTEL
+          </h1>
 
-        </div>
+          <p className="mt-2 text-green-100">
+            {greeting}
+          </p>
 
-        <div className="bg-white p-6 rounded-xl border">
-
-          <h2 className="text-gray-500">
-            Transactions
-          </h2>
-
-          <div className="text-4xl font-bold">
-            {transactions}
-          </div>
+          <p className="text-green-200">
+            {todayDate}
+          </p>
 
         </div>
 
-        <div className="bg-white p-6 rounded-xl border">
+        <div className="mt-4 md:mt-0">
 
-          <h2 className="text-gray-500">
-            Average Sales
-          </h2>
+          <div className="bg-white/10 rounded-xl p-4">
 
-          <div className="text-4xl font-bold">
-            KES {averageSale}
+            <div className="text-sm">
+              Today's Revenue
+            </div>
+
+            <div className="text-3xl font-bold">
+              KES {revenue.toLocaleString()}
+            </div>
+
           </div>
 
         </div>
@@ -139,5 +165,115 @@ export default function DashboardPage() {
       </div>
 
     </div>
-  );
+
+    {/* QUICK ACTIONS */}
+
+    <div>
+
+      <h2 className="text-xl font-bold mb-3">
+        Quick Actions
+      </h2>
+
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+
+        <a
+          href="/dashboard/pos"
+          className="bg-blue-600 text-white p-4 rounded-xl text-center font-semibold"
+        >
+          💰 POS
+        </a>
+
+        <a
+          href="/dashboard/stock"
+          className="bg-orange-500 text-white p-4 rounded-xl text-center font-semibold"
+        >
+          📦 Stock
+        </a>
+
+        <a
+          href="/dashboard/sales"
+          className="bg-green-600 text-white p-4 rounded-xl text-center font-semibold"
+        >
+          🧾 Sales
+        </a>
+
+        <a
+          href="/dashboard/kitchen"
+          className="bg-purple-600 text-white p-4 rounded-xl text-center font-semibold"
+        >
+          👨‍🍳 Kitchen
+        </a>
+
+        <a
+          href="/dashboard/users"
+          className="bg-slate-700 text-white p-4 rounded-xl text-center font-semibold"
+        >
+          👥 Users
+        </a>
+
+      </div>
+
+    </div>
+
+    {/* STATS */}
+
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+      <div className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-green-600">
+
+        <p className="text-gray-500">
+          Today's Revenue
+        </p>
+
+        <p className="text-4xl font-bold mt-2 text-green-700">
+          KES {revenue.toLocaleString()}
+        </p>
+
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-blue-600">
+
+        <p className="text-gray-500">
+          Transactions Today
+        </p>
+
+        <p className="text-4xl font-bold mt-2 text-blue-700">
+          {transactions}
+        </p>
+
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-orange-600">
+
+        <p className="text-gray-500">
+          Average Sale
+        </p>
+
+        <p className="text-4xl font-bold mt-2 text-orange-700">
+          KES {averageSale.toLocaleString()}
+        </p>
+
+      </div>
+
+    </div>
+
+    {/* WELCOME CARD */}
+
+    <div className="bg-white rounded-2xl p-6 shadow-lg">
+
+      <h2 className="text-2xl font-bold mb-3">
+        Hotel Operations Overview
+      </h2>
+
+      <p className="text-gray-600">
+        Welcome to CHOMA ZONE HOTEL management system.
+        Monitor revenue, stock, sales, kitchen orders,
+        payroll and hotel operations from one place.
+      </p>
+
+    </div>
+
+  </div>
+);
+  
 }

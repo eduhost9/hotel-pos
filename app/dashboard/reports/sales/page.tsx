@@ -2,6 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import ReportActions
+from "@/components/ReportActions";
+import { exportReportPDF } from "@/lib/exportReportPDF";
+
 
 export default function SalesReportPage() {
   const [sales, setSales] =
@@ -98,13 +102,50 @@ const cardTotal =
       0
     );
 
+    function exportSalesPDF() {
+  const rows =
+    sales.map(
+      (sale) => [
+        sale.receipt_number,
+        sale.payment_method,
+        sale.total,
+        new Date(
+          sale.created_at
+        ).toLocaleString(),
+      ]
+    );
+
+  exportReportPDF(
+    "Sales Report",
+    [
+      "Receipt",
+      "Payment",
+      "Total",
+      "Date",
+    ],
+    rows
+  );
+}
+
   return (
     <div className="p-6">
 
       <h1 className="text-3xl font-bold mb-6">
         Sales Report
       </h1>
+
+      <ReportActions
+        reportId="sales-report"
+        fileName="Sales Report"
+        onExportPDF={
+          exportSalesPDF
+        }
+      />
+<div id="sales-report">
+
+
 <div className="flex gap-4 mb-6">
+  
 
   <input
     type="date"
@@ -257,6 +298,7 @@ const cardTotal =
   </div>
 
 </div>
+    </div>
     </div>
   );
 }

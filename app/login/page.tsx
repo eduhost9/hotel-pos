@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { db } from "@/lib/offline-db";
+
 
 export default function LoginPage() {
   const router = useRouter();
@@ -14,38 +14,7 @@ export default function LoginPage() {
   const [password, setPassword] =
     useState("");
 
-  async function login() {
-
-      if (!navigator.onLine) {
-
-    const offlineUser =
-      await db.offlineUsers
-        .where("email")
-        .equals(email)
-        .first();
-
-    if (!offlineUser) {
-
-      alert(
-        "User not available offline. Login online at least once first."
-      );
-
-      return;
-    }
-
-    localStorage.setItem(
-      "offlineUser",
-      JSON.stringify(
-        offlineUser
-      )
-    );
-
-    router.push(
-      "/dashboard"
-    );
-
-    return;
-  }
+ async function login() {
 
   const { error } =
     await supabase.auth.signInWithPassword({
@@ -58,81 +27,8 @@ export default function LoginPage() {
     return;
   }
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return;
-  }
-
-  const { data: profile } =
-    await supabase
-      .from("users")
-      .select("*")
-      .eq(
-        "auth_user_id",
-        user.id
-      )
-      .single();
-
-  const { data: perms } =
-    await supabase
-      .from("user_permissions")
-      .select("permission")
-      .eq(
-        "user_id",
-        profile.id
-      );
-
-  await db.offlineUsers.clear();
-
-  await db.offlineUsers.add({
-    auth_user_id:
-      user.id,
-
-    email:
-      profile.email,
-
-    full_name:
-      profile.full_name,
-
-    role:
-      profile.role,
-
-    permissions:
-      perms?.map(
-        (p) => p.permission
-      ) || [],
-  });
-const cachedUser = {
-  auth_user_id:
-    user.id,
-
-  email:
-    profile.email,
-
-  full_name:
-    profile.full_name,
-
-  role:
-    profile.role,
-
-  permissions:
-    perms?.map(
-      (p) => p.permission
-    ) || [],
-};
-
-localStorage.setItem(
-  "offlineUser",
-  JSON.stringify(
-    cachedUser
-  )
-);
   router.push("/dashboard");
 }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-900 via-green-800 to-emerald-700 flex items-center justify-center p-4">
 
@@ -208,11 +104,12 @@ localStorage.setItem(
           />
 
           <button
-            onClick={login}
-            className="w-full py-4 rounded-xl bg-green-500 hover:bg-green-600 text-white text-lg font-semibold transition-all"
-          >
-            Sign In
-          </button>
+  onClick={login}
+
+  className="w-full py-4 rounded-xl bg-green-500 hover:bg-green-600 text-white text-lg font-semibold transition-all"
+>
+  Sign In
+</button>
 
           <div className="text-center text-green-100 mt-6">
 

@@ -32,8 +32,25 @@ const [stockCount, setStockCount] =
 const [averagePurchase, setAveragePurchase] =
   useState(0);
 
+  const [issueItem,
+setIssueItem] =
+  useState("");
+
+const [issueQty,
+setIssueQty] =
+  useState("");
+
+const [issuedTo,
+setIssuedTo] =
+  useState("");
+
+const [issuances,
+setIssuances] =
+  useState<any[]>([]);
+
   useEffect(() => {
     loadStock();
+    loadIssuances();
   }, []);
 
   async function loadStock() {
@@ -64,6 +81,109 @@ setAveragePurchase(
 );
 
   }
+async function issueStock() {
+
+  const stockEntry =
+    stockEntries.find(
+      (entry) =>
+        entry.item_name ===
+        issueItem
+    );
+
+  if (!stockEntry) {
+
+    alert(
+      "Item not found in stock."
+    );
+
+    return;
+  }
+
+  const currentBalance =
+    getBalance(
+      stockEntry.item_name,
+      Number(
+        stockEntry.quantity
+      )
+    );
+
+  if (
+    Number(issueQty) >
+    currentBalance
+  ) {
+
+    alert(
+      `Insufficient stock. Available balance is ${currentBalance}.`
+    );
+
+    return;
+  }
+
+  await supabase
+    .from("stock_issuance")
+    .insert({
+      item_name:
+        issueItem,
+
+      quantity:
+        Number(issueQty),
+
+      issued_to:
+        issuedTo,
+    });
+
+  setIssueItem("");
+  setIssueQty("");
+  setIssuedTo("");
+
+  loadIssuances();
+}
+
+
+async function loadIssuances() {
+
+  const { data } =
+    await supabase
+      .from("stock_issuance")
+      .select("*")
+      .order(
+        "created_at",
+        {
+          ascending: false,
+        }
+      );
+
+  setIssuances(
+    data || []
+  );
+}
+
+function getBalance(
+  itemName: string,
+  purchasedQty: number
+) {
+
+  const issuedQty =
+    issuances
+      .filter(
+        (issue) =>
+          issue.item_name ===
+          itemName
+      )
+      .reduce(
+        (sum, issue) =>
+          sum +
+          Number(
+            issue.quantity
+          ),
+        0
+      );
+
+  return (
+    purchasedQty -
+    issuedQty
+  );
+}
 
   async function saveStock() {
 
@@ -170,6 +290,112 @@ async function deleteStock(id: string) {
  return (
   <PermissionGuard permission="stock">
     <div>
+    
+    <div className="bg-white border rounded-xl p-4 mb-6">
+
+  <h2 className="text-xl font-bold mb-4">
+    Stock Issuance
+  </h2>
+</div>
+
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+
+    <select
+  value={issueItem}
+  onChange={(e) =>
+    setIssueItem(
+      e.target.value
+    )
+  }
+  className="border p-2"
+>
+
+  <option value="">
+    Select Item
+  </option>
+
+  {stockEntries.map(
+    (item) => (
+
+      <option
+        key={item.id}
+        value={
+          item.item_name
+        }
+      >
+        {item.item_name}
+      </option>
+
+    )
+  )}
+
+</select>
+  {
+  issueItem && (
+
+    <div className="text-sm">
+
+      Available:
+
+      <span
+        className="font-bold ml-2"
+      >
+
+        {
+          getBalance(
+            issueItem,
+            Number(
+              stockEntries.find(
+                (s) =>
+                  s.item_name ===
+                  issueItem
+              )
+              ?.quantity || 0
+            )
+          )
+        }
+
+      </span>
+
+    </div>
+
+  )
+}    
+
+    <input
+      value={issueQty}
+      onChange={(e) =>
+        setIssueQty(
+          e.target.value
+        )
+      }
+      placeholder="Quantity"
+      className="border p-2"
+    />
+
+    <input
+      value={issuedTo}
+      onChange={(e) =>
+        setIssuedTo(
+          e.target.value
+        )
+      }
+      placeholder="Issued To"
+      className="border p-2"
+    />
+
+  </div>
+
+  <button
+    onClick={issueStock}
+    className="mt-3 bg-orange-600 text-white px-4 py-2 rounded"
+  >
+    Issue Stock
+  </button>
+
+</div>
+    
+    <div>
 
       <h1 className="text-3xl font-bold mb-6">
         Stock Purchases
@@ -260,6 +486,35 @@ async function deleteStock(id: string) {
       </button>
 
       <div className="mt-8">
+<div className="mb-3">
+
+  <h2 className="font-bold text-lg">
+    Current Stock
+  </h2>
+
+  <div className="text-red-600 text-sm">
+
+    {stockEntries
+      .filter(
+  (item) =>
+    getBalance(
+      item.item_name,
+      Number(item.quantity)
+    ) <= 5
+)
+      .map(
+  (item) =>
+    `${item.item_name} (${getBalance(
+      item.item_name,
+      Number(item.quantity)
+    )})`
+)
+      .join(", ")
+    }
+
+  </div>
+
+</div>
 
         <table className="w-full border">
 
@@ -274,6 +529,9 @@ async function deleteStock(id: string) {
               <th className="p-2 text-left">
                 Qty
               </th>
+              <th className="p-2 text-left">
+  Balance
+</th>
 
               <th className="p-2 text-left">
                 Cost
@@ -308,7 +566,21 @@ async function deleteStock(id: string) {
                   <td className="p-2">
                     {entry.quantity}
                   </td>
-
+                <td
+  className={`p-2 font-bold ${
+    getBalance(
+      entry.item_name,
+      Number(entry.quantity)
+    ) <= 5
+      ? "text-red-600"
+      : "text-green-700"
+  }`}
+>
+  {getBalance(
+    entry.item_name,
+    Number(entry.quantity)
+  )}
+</td>
                   <td className="p-2">
                     KES {entry.total_cost}
                   </td>

@@ -16,36 +16,17 @@ export interface OfflineSale {
   created_at: string;
 }
 
-export interface OfflineUser {
-  id?: number;
-
-  auth_user_id: string;
-
-  email: string;
-
-  full_name: string;
-
-  role: string;
-
-  permissions: string[];
-}
-
-
 class HotelDB extends Dexie {
 
   offlineSales!: Table<OfflineSale>;
-  offlineUsers!: Table<OfflineUser>;
 
   constructor() {
     super("HotelPOS");
 
-    this.version(3).stores({
-  offlineSales:
-    "++id,cashier_id,receipt_number,synced",
-
-  offlineUsers:
-    "++id,email,auth_user_id",
-});
+    this.version(4).stores({
+      offlineSales:
+        "++id,cashier_id,receipt_number,synced",
+    });
   }
 }
 

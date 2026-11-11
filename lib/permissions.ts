@@ -1,31 +1,8 @@
 import { supabase } from "./supabase";
-import { db } from "./offline-db";
 
 export async function hasPermission(
   permission: string
 ) {
-
-  // OFFLINE MODE
-
-  if (!navigator.onLine) {
-
-    const offlineUser =
-      await db.offlineUsers
-        .toCollection()
-        .first();
-
-    if (!offlineUser) {
-      return false;
-    }
-
-    return (
-      offlineUser.permissions?.includes(
-        permission
-      ) || false
-    );
-  }
-
-  // ONLINE MODE
 
   const {
     data: { user },
@@ -67,20 +44,8 @@ export async function hasPermission(
   );
 }
 
+
 export async function getUserPermissions() {
-
-  if (!navigator.onLine) {
-
-    const offlineUser =
-      await db.offlineUsers
-        .toCollection()
-        .first();
-
-    return (
-      offlineUser?.permissions ||
-      []
-    );
-  }
 
   const {
     data: { user },

@@ -529,7 +529,7 @@ bottom-0
 
       </div>
 {showReceipt && (
-  <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+ <div className="fixed inset-0 z-[9999] bg-black/70 flex items-center justify-center p-4">
 
     <div className="bg-white p-6 rounded-lg w-[95%] max-w-md">
 
@@ -541,7 +541,66 @@ bottom-0
       />
 
       <button
-        onClick={() => window.print()}
+  onClick={() => {
+
+    const printContents =
+      document.getElementById(
+        "receipt-content"
+      )?.innerHTML;
+
+    const printWindow =
+      window.open(
+        "",
+        "_blank",
+        "width=400,height=800"
+      );
+
+    if (
+      printWindow &&
+      printContents
+    ) {
+
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Receipt</title>
+
+            <style>
+              body{
+                font-family: monospace;
+                padding:10px;
+              }
+
+              h2,h3,p{
+                text-align:center;
+              }
+
+              table{
+                width:100%;
+              }
+
+              td{
+                padding:3px;
+              }
+            </style>
+
+          </head>
+
+          <body>
+
+            ${printContents}
+
+          </body>
+
+        </html>
+      `);
+
+      printWindow.document.close();
+
+      printWindow.print();
+    }
+
+  }}
         className="mt-4 w-full bg-blue-600 text-white py-2 rounded"
       >
         Print Receipt

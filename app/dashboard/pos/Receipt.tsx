@@ -11,14 +11,17 @@ export default function Receipt({
   total,
   paymentMethod,
 }: ReceiptProps) {
+  
   return (
-    <div
-      className="w-[300px] text-sm"
-      style={{ fontFamily: "monospace" }}
-    >
+  <div
+    id="receipt-content"
+    className="w-[300px] text-sm"
+    style={{ fontFamily: "monospace" }}
+  >
+
       <div className="text-center">
         <h2 className="text-lg font-bold">
-          CHOMA ZONE HOTEL POINT
+          CHOMA ZONE HOTEL
         </h2>
 
         <p>Migadini - Mombasa</p>
@@ -29,8 +32,8 @@ export default function Receipt({
       <hr className="my-2" />
 
       <div>
-        <p>Receipt: {receiptNo}</p>
-        <p>{new Date().toLocaleString()}</p>
+        <p>Receipt No: {receiptNo}</p>
+<p>Date: {new Date().toLocaleString()}</p>
       </div>
 
       <hr className="my-2" />

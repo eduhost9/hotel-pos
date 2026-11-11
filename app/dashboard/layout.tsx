@@ -7,7 +7,7 @@ import { getCurrentRole } from "@/lib/auth";
 import {
   getUserPermissions,
 } from "@/lib/permissions";
-import { db } from "@/lib/offline-db";
+
 
 export default function DashboardLayout({
   children,
@@ -30,59 +30,31 @@ const [sidebarOpen, setSidebarOpen] =
 }, []);
 
 async function checkUser() {
-  if (!navigator.onLine) {
 
-  const savedUser =
-    localStorage.getItem(
-      "offlineUser"
-    );
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (!savedUser) {
+  if (!user) {
 
     router.push("/login");
 
     return;
   }
 
-  const offlineUser =
-    JSON.parse(savedUser);
+  const userRole =
+    await getCurrentRole();
 
-  setRole(
-    offlineUser.role || ""
-  );
+  setRole(userRole || "");
 
-  setPermissions(
-    offlineUser.permissions || []
-  );
+  const perms =
+    await getUserPermissions();
+
+  setPermissions(perms);
 
   setLoading(false);
-
-  return;
 }
 
-const {
-  data: { user },
-} = await supabase.auth.getUser();
-
-if (!user) {
-
-  router.push("/login");
-
-  return;
-}
-
-  const userRole =
-  await getCurrentRole();
-
-setRole(userRole || "");
-
-const perms =
-  await getUserPermissions();
-
-setPermissions(perms);
-
-setLoading(false);
-}
 
 function can(
   permission: string
@@ -95,10 +67,6 @@ function can(
 }
 
   async function logout() {
-
-  localStorage.removeItem(
-    "offlineUser"
-  );
 
   await supabase.auth.signOut();
 

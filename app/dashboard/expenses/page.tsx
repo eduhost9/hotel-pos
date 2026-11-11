@@ -11,6 +11,10 @@ export default function ExpensesPage() {
   const [amount, setAmount] =
     useState("");
 
+  const [expenseType,
+  setExpenseType] =
+  useState("operating");
+
   const [expenses, setExpenses] =
     useState<any[]>([]);
 
@@ -41,12 +45,14 @@ export default function ExpensesPage() {
 
     if (editingId) {
 
-      await supabase
-        .from("expenses")
-        .update({
-          description,
-          amount: Number(amount),
-        })
+     await supabase
+  .from("expenses")
+  .update({
+    description,
+    amount: Number(amount),
+    expense_type:
+      expenseType,
+  })
         .eq("id", editingId);
 
       setEditingId(null);
@@ -54,24 +60,31 @@ export default function ExpensesPage() {
     } else {
 
       await supabase
-        .from("expenses")
-        .insert({
-          description,
-          amount: Number(amount),
-          expense_date:
-            new Date()
-              .toISOString()
-              .split("T")[0],
-        });
+  .from("expenses")
+  .insert({
+    description,
+    amount: Number(amount),
+
+    expense_type:
+      expenseType,
+
+    expense_date:
+      new Date()
+        .toISOString()
+        .split("T")[0],
+  });
+
     }
 
     setDescription("");
     setAmount("");
+    setExpenseType("operating");
 
     loadExpenses();
   }
 
   function editExpense(expense: any) {
+
 
     setEditingId(expense.id);
 
@@ -82,6 +95,12 @@ export default function ExpensesPage() {
     setAmount(
       expense.amount?.toString() || ""
     );
+
+    setExpenseType(
+  expense.expense_type ||
+  "operating"
+);
+
   }
 
   async function deleteExpense(
@@ -104,13 +123,52 @@ export default function ExpensesPage() {
     loadExpenses();
   }
 
-  const totalExpenses =
-    expenses.reduce(
-      (sum, expense) =>
+  const operatingExpenses =
+  expenses
+    .filter(
+      (e) =>
+        e.expense_type ===
+        "operating"
+    )
+    .reduce(
+      (sum, e) =>
         sum +
-        Number(expense.amount),
+        Number(e.amount),
       0
     );
+
+const payrollExpenses =
+  expenses
+    .filter(
+      (e) =>
+        e.expense_type ===
+        "payroll"
+    )
+    .reduce(
+      (sum, e) =>
+        sum +
+        Number(e.amount),
+      0
+    );
+
+const capitalExpenses =
+  expenses
+    .filter(
+      (e) =>
+        e.expense_type ===
+        "capital"
+    )
+    .reduce(
+      (sum, e) =>
+        sum +
+        Number(e.amount),
+      0
+    );
+
+const totalExpenses =
+  operatingExpenses +
+  payrollExpenses +
+  capitalExpenses;
 
   return (
   <PermissionGuard permission="expenses">
@@ -120,19 +178,59 @@ export default function ExpensesPage() {
         Expenses
       </h1>
 
-      <div className="bg-white p-4 rounded-xl border mb-6">
+      <div className="grid md:grid-cols-4 gap-4 mb-6">
 
-        <h2 className="text-gray-500">
-          Total Expenses
-        </h2>
+  <div className="bg-white border rounded-xl p-4">
 
-        <div className="text-4xl font-bold">
-          KES {totalExpenses}
-        </div>
+    <h3 className="text-gray-500">
+      Total Expenses
+    </h3>
 
-      </div>
+    <div className="text-3xl font-bold">
+      KES {totalExpenses}
+    </div>
 
-      <div className="grid grid-cols-2 gap-3 mb-6">
+  </div>
+
+  <div className="bg-green-50 border rounded-xl p-4">
+
+    <h3>
+      Operating
+    </h3>
+
+    <div className="text-3xl font-bold text-green-700">
+      KES {operatingExpenses}
+    </div>
+
+  </div>
+
+  <div className="bg-yellow-50 border rounded-xl p-4">
+
+    <h3>
+      Payroll
+    </h3>
+
+    <div className="text-3xl font-bold text-yellow-700">
+      KES {payrollExpenses}
+    </div>
+
+  </div>
+
+  <div className="bg-purple-50 border rounded-xl p-4">
+
+    <h3>
+      Capital
+    </h3>
+
+    <div className="text-3xl font-bold text-purple-700">
+      KES {capitalExpenses}
+    </div>
+
+  </div>
+
+</div>
+
+     <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
 
         <input
           value={description}
@@ -155,7 +253,29 @@ export default function ExpensesPage() {
           placeholder="Amount"
           className="border p-2"
         />
+<select
+  value={expenseType}
+  onChange={(e) =>
+    setExpenseType(
+      e.target.value
+    )
+  }
+  className="border p-2"
+>
 
+  <option value="operating">
+    Operating Expense
+  </option>
+
+  <option value="payroll">
+    Payroll Expense
+  </option>
+
+  <option value="capital">
+    Capital Expense
+  </option>
+
+</select>
       </div>
 
       <button
@@ -182,6 +302,10 @@ export default function ExpensesPage() {
             </th>
 
             <th className="p-2 text-left">
+  Type
+</th>
+
+            <th className="p-2 text-left">
               Actions
             </th>
 
@@ -206,7 +330,12 @@ export default function ExpensesPage() {
                 <td className="p-2">
                   KES {expense.amount}
                 </td>
+<td className="p-2">
 
+  {expense.expense_type ||
+    "operating"}
+
+</td>
                 <td className="p-2">
 
                   <div className="flex gap-2">
